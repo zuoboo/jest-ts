@@ -45,7 +45,6 @@ test("can2 and can3 have the same reference", () => {
   expect(can2).toBe(can3);
 });
 
-
 /* 
 toBe, toEqual, toStrictEqualの使い分け
 - toBeを利用するケース
@@ -56,3 +55,37 @@ toBe, toEqual, toStrictEqualの使い分け
 - toStrictEqualを利用するケース
 	- 生成元のクラス名やundefinedなプロパティ、配列内の未定義の要素とundefinedの評価を含めた厳密なオブジェクトの評価
 */
+
+// resolvesを使用した非同期な関数の結果の評価
+const fetchDataWithPromiseResolve = () =>
+  new Promise((resolve) => setTimeout(resolve, 1000, "peanut butter"));
+
+// .resolvesを使用して成功時の値を受け取る
+test("return peanut butter", () => {
+  return expect(fetchDataWithPromiseResolve()).resolves.toBe("peanut butter");
+});
+
+// async/awaitを使用した非同期な関数の結果の評価(returnがいらない)
+test("return peanut butter with async/await", async () => {
+  await expect(fetchDataWithPromiseResolve()).resolves.toBe("peanut butter");
+});
+
+// .rejecrsをを使用した非同期な関数の結果の評価
+const fetchDataWithPromiseReject = () =>
+  new Promise((resolve, reject) =>
+    setTimeout(reject, 1000, new Error("peanut butter does not exist"))
+  );
+
+//.rejectsを使用して失敗時の値を受け取る
+test("failed to return peanut butter", () => {
+  return expect(fetchDataWithPromiseReject()).rejects.toThrow(
+    "peanut butter does not exist"
+  );
+});
+
+// async/awaitを使用した非同期な関数の結果の評価(returnがいらない)
+test("failed to return peanut butter with async/await", async () => {
+	await expect(fetchDataWithPromiseReject()).rejects.toThrow(
+		"peanut butter does not exist"
+	);
+});
